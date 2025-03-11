@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { searchMovies } from '../services/api';
 import MovieCard from '../components/MovieCard';
 import SearchBar from '../components/SearchBar';
@@ -13,7 +13,7 @@ function Home() {
   const [totalResults, setTotalResults] = useState(0);
   const [type, setType] = useState('');
 
-  const handleSearch = async (searchQuery, movieType = type, pageNumber = 1) => {
+  const handleSearch = useCallback(async (searchQuery, movieType = type, pageNumber = 1) => {
     try {
       setLoading(true);
       setError(null);
@@ -31,19 +31,19 @@ function Home() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [type]);
 
   // Load initial movies when component mounts
   useEffect(() => {
     handleSearch('Marvel'); // Default search term when page loads
-  }, []); // Empty dependency array means this runs once when component mounts
+  }, [handleSearch]);
 
   // Handle search updates
   useEffect(() => {
     if (query) {
       handleSearch(query, type, page);
     }
-  }, [query, type, page]);
+  }, [query, type, page, handleSearch]);
 
   // Test the API when component mounts
   useEffect(() => {
